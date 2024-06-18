@@ -9,8 +9,42 @@ variable "enable_container_insights" {
   default     = false
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "The VPC ID"
+}
+
+variable "subnets" {
+  type        = list(string)
+  description = "A list of subnet IDs"
+}
+
 variable "services" {
   type        = map(any)
   default     = {}
   description = "A map of services to create"
+}
+
+variable "environment" {
+  type        = string
+  default     = "test"
+  description = "The environment name"
+}
+
+variable "enable_discovery" {
+  type        = bool
+  default     = false
+  description = "Enable service discovery"
+}
+
+variable "security_groups" {
+  type        = list(string)
+  default     = []
+  description = "A map of security groups"
+}
+
+variable "cloudwatch_log_retention_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain log events"
 }
