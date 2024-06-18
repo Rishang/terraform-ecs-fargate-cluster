@@ -142,7 +142,7 @@ module "fargate_task_definition" {
   ]
 
   # cloudwatch log
-  logConfiguration = var.use_cloudwatch_log ? {
+  logConfiguration = var.use_cloudwatch_logs ? {
     logDriver = "awslogs"
     options = {
       "awslogs-group"         = aws_cloudwatch_log_group.this[each.key].name

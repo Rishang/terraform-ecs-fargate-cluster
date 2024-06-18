@@ -56,7 +56,7 @@ module "fargate" {
   cluster_name       = local.cluster_name
   vpc_id             = data.aws_vpc.default.id
   subnets            = data.aws_subnets.default.ids
-  use_cloudwatch_log = true
+  use_cloudwatch_logs = true
   security_groups    = [aws_security_group.ecs_sg.id]
 
   services = {
