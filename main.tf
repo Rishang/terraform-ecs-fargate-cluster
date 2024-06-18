@@ -1,9 +1,12 @@
 locals {
   cluster_name = aws_ecs_cluster.this.name
+  region = data.aws_region.current.name
 }
 
+data "aws_region" "current" {}
+
 resource "aws_ecs_cluster" "this" {
-  name = var.cluster_name
+  name = "${var.environment}-${var.cluster_name}"
 
   setting {
     name  = "containerInsights"
@@ -25,7 +28,7 @@ resource "aws_ecs_cluster_capacity_providers" "app" {
 
 # ecs task execution role 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "${local.cluster_name}-ecs-task-execution-role"
+  name = "${local.cluster_name}-${local.region}-ecsTaskExecutionRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -50,7 +53,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_AmazonECSTask
 resource "aws_iam_role" "ecsTaskRole" {
   for_each = var.services
 
-  name = "${var.environment}-ecsTaskRole"
+  name = "${local.cluster_name}-${each.key}-${local.region}-ECSRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -65,19 +68,40 @@ resource "aws_iam_role" "ecsTaskRole" {
   })
 }
 
+# ecs task policy
+resource "aws_iam_policy" "ecsTaskPolicy" {
+  for_each    = var.services
+  name        = "${var.cluster_name}-${each.key}-${local.region}-ECSPolicy"
+  description = "ECS Task Policy for ${each.key}"
+  policy      = jsonencode(lookup(each.value, "task_policy", {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "none:null",
+            "Resource": "*",
+
+        }
+      ]
+    })
+  )
+}
+
+# ecs task policy attachment
+resource "aws_iam_role_policy_attachment" "ecsTaskPolicyAttachment" {
+  for_each = var.services
+  role       = aws_iam_role.ecsTaskRole[each.key].name
+  policy_arn = aws_iam_policy.ecsTaskPolicy[each.key].arn
+}
+
+# service discovery
 resource "aws_service_discovery_private_dns_namespace" "service" {
   count = var.enable_discovery ? 1 : 0
   name  = var.cluster_name
   vpc   = var.vpc_id
 }
 
-# ecs task policy
-resource "aws_iam_policy" "ecsTaskPolicy" {
-  for_each    = var.services
-  name        = "${var.cluster_name}-${each.key}-ecsTaskPolicy"
-  description = "ECS Task Policy"
-  policy      = jsonencode(lookup(each.value, "task_policy", {}))
-}
+
 
 resource "aws_ecr_repository" "this" {
   for_each = var.services

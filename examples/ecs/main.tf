@@ -1,6 +1,6 @@
 locals {
   EnvironmentName = "test"
-  cluster_name    = "${local.EnvironmentName}-app"
+  cluster_name    = "app"
 }
 
 # ------------------------ NERWORK -------------------------------
@@ -50,7 +50,7 @@ resource "aws_security_group" "ecs_sg" {
 module "fargate" {
   source = "../../"
 
-  environment = "test"
+  environment = local.EnvironmentName
 
   # fargate
   cluster_name = local.cluster_name

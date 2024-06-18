@@ -27,8 +27,7 @@ variable "services" {
 
 variable "environment" {
   type        = string
-  default     = "test"
-  description = "The environment name"
+  description = "The environment name eg: dev, stage, prod"
 }
 
 variable "enable_discovery" {
