@@ -51,11 +51,11 @@ variable "cloudwatch_log_retention_days" {
 variable "use_cloudwatch_log" {
   type        = bool
   default     = false
-  description = "Enable cloudwatch log"
+  description = "Enable cloudwatch log."
 }
 
 variable "custom_log_configuration" {
   type        = map(any)
   default     = null
-  description = "Custom log configuration"
+  description = "Custom log configuration. Keep `null` if `use_cloudwatch_log` is `true`"
 }
