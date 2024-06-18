@@ -57,6 +57,7 @@ module "fargate" {
   vpc_id             = data.aws_vpc.default.id
   subnets            = data.aws_subnets.default.ids
   use_cloudwatch_log = true
+  security_groups    = [aws_security_group.ecs_sg.id]
 
   services = {
     "whoami" = {
