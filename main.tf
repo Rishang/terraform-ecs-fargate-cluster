@@ -127,8 +127,8 @@ module "fargate_task_definition" {
 
   family                   = "${local.cluster_name}-${each.value.name}"
   image                    = aws_ecr_repository.this[each.key].repository_url
-  memory                   = each.value.memory
-  cpu                      = each.value.cpu
+  memory                   = lookup(each.value, "memory", 512)
+  cpu                      = lookup(each.value, "cpu", 256)
   name                     = each.value.name
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
