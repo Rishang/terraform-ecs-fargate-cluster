@@ -4,7 +4,7 @@
 
 ### Usage
 
-[For examples and refrences click here.](https://github.com/Rishang/terraform-aws-fargate/tree/main/examples)
+[For examples and refrences click here.](https://github.com/Rishang/terraform-ecs-fargate-cluster/tree/main/examples)
 
 
 
