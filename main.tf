@@ -71,7 +71,7 @@ resource "aws_iam_role" "ecsTaskRole" {
 # ecs task policy
 resource "aws_iam_policy" "ecsTaskPolicy" {
   for_each    = var.services
-  name        = "${var.cluster_name}-${each.key}-${local.region}-ECSPolicy"
+  name        = "${local.cluster_name}-${each.key}-${local.region}-ECSPolicy"
   description = "ECS Task Policy for ${each.key}"
   policy      = jsonencode(lookup(each.value, "task_policy", {
       "Version": "2012-10-17",

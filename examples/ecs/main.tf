@@ -56,6 +56,7 @@ module "fargate" {
   cluster_name = local.cluster_name
   vpc_id       = data.aws_vpc.default.id
   subnets      = data.aws_subnets.default.ids
+
   services = {
     "whoami" = {
       name             = "whoami"
