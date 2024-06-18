@@ -1,6 +1,7 @@
 locals {
   cluster_name = aws_ecs_cluster.this.name
   region       = data.aws_region.current.name
+  services     = var.create_services == true ? var.services : {}
 }
 
 data "aws_region" "current" {}
@@ -51,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_AmazonECSTask
 
 # ecs task role
 resource "aws_iam_role" "ecsTaskRole" {
-  for_each = var.services
+  for_each = local.services
 
   name = "${local.cluster_name}-${each.key}-${local.region}-ECSRole"
   assume_role_policy = jsonencode({
@@ -70,7 +71,7 @@ resource "aws_iam_role" "ecsTaskRole" {
 
 # ecs task policy
 resource "aws_iam_policy" "ecsTaskPolicy" {
-  for_each    = var.services
+  for_each    = local.services
   name        = "${local.cluster_name}-${each.key}-${local.region}-ECSPolicy"
   description = "ECS Task Policy for ${each.key}"
   policy = jsonencode(lookup(each.value, "task_policy", {
@@ -89,7 +90,7 @@ resource "aws_iam_policy" "ecsTaskPolicy" {
 
 # ecs task policy attachment
 resource "aws_iam_role_policy_attachment" "ecsTaskPolicyAttachment" {
-  for_each   = var.services
+  for_each   = local.services
   role       = aws_iam_role.ecsTaskRole[each.key].name
   policy_arn = aws_iam_policy.ecsTaskPolicy[each.key].arn
 }
@@ -104,13 +105,13 @@ resource "aws_service_discovery_private_dns_namespace" "service" {
 
 
 resource "aws_ecr_repository" "this" {
-  for_each = var.services
+  for_each = local.services
   name     = "${local.cluster_name}-${each.key}"
 }
 
 
 resource "aws_cloudwatch_log_group" "this" {
-  for_each          = var.services
+  for_each          = local.services
   name              = "/ecs/${local.cluster_name}/${each.key}"
   retention_in_days = var.cloudwatch_log_retention_days
 }
@@ -120,7 +121,7 @@ resource "aws_cloudwatch_log_group" "this" {
 # things to be created
 # ecs service (memory scaling) >> TargetGroup >> Alb HTTPS rule >> Route53 >> app.example.com
 module "fargate_task_definition" {
-  for_each = var.services
+  for_each = local.services
 
   source  = "Rishang/ecs-task-definition/aws"
   version = "2.1.9"
@@ -153,7 +154,7 @@ module "fargate_task_definition" {
 }
 
 module "fargate" {
-  for_each = var.services
+  for_each = local.services
   source   = "Rishang/fargate/aws"
   version  = "1.4.3"
 

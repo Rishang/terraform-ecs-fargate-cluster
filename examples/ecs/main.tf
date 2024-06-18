@@ -53,11 +53,11 @@ module "fargate" {
   environment = local.EnvironmentName
 
   # fargate
-  cluster_name       = local.cluster_name
-  vpc_id             = data.aws_vpc.default.id
-  subnets            = data.aws_subnets.default.ids
+  cluster_name        = local.cluster_name
+  vpc_id              = data.aws_vpc.default.id
+  subnets             = data.aws_subnets.default.ids
   use_cloudwatch_logs = true
-  security_groups    = [aws_security_group.ecs_sg.id]
+  security_groups     = [aws_security_group.ecs_sg.id]
 
   services = {
     "whoami" = {

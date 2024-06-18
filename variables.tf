@@ -19,6 +19,12 @@ variable "subnets" {
   description = "A list of subnet IDs"
 }
 
+variable "create_services" {
+  type        = bool
+  default     = true
+  description = "Create services"
+}
+
 variable "services" {
   type        = map(any)
   default     = {}
