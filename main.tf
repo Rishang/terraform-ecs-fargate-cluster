@@ -1,6 +1,6 @@
 locals {
   cluster_name = aws_ecs_cluster.this.name
-  region = data.aws_region.current.name
+  region       = data.aws_region.current.name
 }
 
 data "aws_region" "current" {}
@@ -73,23 +73,23 @@ resource "aws_iam_policy" "ecsTaskPolicy" {
   for_each    = var.services
   name        = "${local.cluster_name}-${each.key}-${local.region}-ECSPolicy"
   description = "ECS Task Policy for ${each.key}"
-  policy      = jsonencode(lookup(each.value, "task_policy", {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "none:null",
-            "Resource": "*",
+  policy = jsonencode(lookup(each.value, "task_policy", {
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : "none:null",
+        "Resource" : "*",
 
-        }
-      ]
+      }
+    ]
     })
   )
 }
 
 # ecs task policy attachment
 resource "aws_iam_role_policy_attachment" "ecsTaskPolicyAttachment" {
-  for_each = var.services
+  for_each   = var.services
   role       = aws_iam_role.ecsTaskRole[each.key].name
   policy_arn = aws_iam_policy.ecsTaskPolicy[each.key].arn
 }
