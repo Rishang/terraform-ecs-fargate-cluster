@@ -140,6 +140,16 @@ module "fargate_task_definition" {
       containerPort = each.value.container_port
     },
   ]
+
+  # cloudwatch log
+  logConfiguration = var.use_cloudwatch_log ? {
+    logDriver = "awslogs"
+    options = {
+      "awslogs-group"         = aws_cloudwatch_log_group.this[each.key].name
+      "awslogs-region"        = local.region
+      "awslogs-stream-prefix" = "ecs"
+    }
+  } : var.custom_log_configuration
 }
 
 module "fargate" {

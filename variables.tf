@@ -47,3 +47,15 @@ variable "cloudwatch_log_retention_days" {
   default     = 0
   description = "The number of days to retain log events"
 }
+
+variable "use_cloudwatch_log" {
+  type        = bool
+  default     = false
+  description = "Enable cloudwatch log"
+}
+
+variable "custom_log_configuration" {
+  type        = map(any)
+  default     = null
+  description = "Custom log configuration"
+}
